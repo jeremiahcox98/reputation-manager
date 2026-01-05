@@ -9,6 +9,7 @@ on:
 jobs:
   collect-metrics:
     runs-on: ubuntu-latest
+    environment: env  # Use the environment where your secrets are stored
     
     steps:
       - name: Checkout code
