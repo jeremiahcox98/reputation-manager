@@ -7,24 +7,40 @@ const notion = new Client({
 
 /**
  * Formats a date to readable text format (e.g., "December 20, 2024")
- * @param {Date} date - Date object
+ * Uses Central Time (America/Chicago timezone)
  * @returns {string} Formatted date string
  */
-function formatDateText(date) {
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+function formatDateText() {
+  const now = new Date();
+  const options = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    timeZone: 'America/Chicago'
+  };
+  return now.toLocaleDateString('en-US', options);
 }
 
 /**
  * Formats a date to ISO date string (YYYY-MM-DD) for Notion Date property
- * Uses local timezone instead of UTC to avoid date differences
- * @param {Date} date - Date object
- * @returns {string} ISO date string in local timezone
+ * Uses Central Time (America/Chicago timezone) to ensure correct date
+ * @returns {string} ISO date string in Central Time
  */
-function formatDateISO(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+function formatDateISO() {
+  const now = new Date();
+  // Use Intl.DateTimeFormat to get Central Time date components
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Chicago',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  
+  const parts = formatter.formatToParts(now);
+  const year = parts.find(p => p.type === 'year').value;
+  const month = parts.find(p => p.type === 'month').value;
+  const day = parts.find(p => p.type === 'day').value;
+  
   return `${year}-${month}-${day}`;
 }
 
@@ -59,8 +75,8 @@ async function findPageByDay(dayText) {
  */
 async function createPage(metrics) {
   try {
-    const today = formatDateText(new Date());
-    const todayISO = formatDateISO(new Date());
+    const today = formatDateText();
+    const todayISO = formatDateISO();
     
     const response = await notion.pages.create({
       parent: {
@@ -120,7 +136,7 @@ async function createPage(metrics) {
  */
 async function updatePage(pageId, metrics) {
   try {
-    const todayISO = formatDateISO(new Date());
+    const todayISO = formatDateISO();
     
     await notion.pages.update({
       page_id: pageId,
@@ -151,7 +167,7 @@ async function updatePage(pageId, metrics) {
       },
     });
 
-    const today = formatDateText(new Date());
+    const today = formatDateText();
     console.log(`Updated existing page in Notion for ${today}`);
   } catch (error) {
     console.error('Error updating page:', error.message);
@@ -168,7 +184,7 @@ async function updatePage(pageId, metrics) {
  */
 export async function upsertMetrics(metrics) {
   try {
-    const today = formatDateText(new Date());
+    const today = formatDateText();
     const existingPageId = await findPageByDay(today);
 
     if (existingPageId) {
