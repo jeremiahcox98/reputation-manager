@@ -1,0 +1,37 @@
+name: Daily Metrics Collection
+
+on:
+  schedule:
+    # Run daily at 9:00 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  collect-metrics:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run metrics collection
+        env:
+          HASDATA_API_KEY: ${{ secrets.HASDATA_API_KEY }}
+          GOOGLE_PLACE_ID: ${{ secrets.GOOGLE_PLACE_ID }}
+          INSTAGRAM_BUSINESS_HANDLE: ${{ secrets.INSTAGRAM_BUSINESS_HANDLE }}
+          INSTAGRAM_PERSONAL_HANDLE: ${{ secrets.INSTAGRAM_PERSONAL_HANDLE }}
+          GOHIGHLEVEL_API_TOKEN: ${{ secrets.GOHIGHLEVEL_API_TOKEN }}
+          GOHIGHLEVEL_LOCATION_ID: ${{ secrets.GOHIGHLEVEL_LOCATION_ID }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: npm start
+

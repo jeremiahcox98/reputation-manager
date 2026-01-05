@@ -1,0 +1,26 @@
+{
+  "name": "reputation-manager",
+  "version": "1.0.0",
+  "description": "Daily metrics collection script for reputation and social media tracking",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "metrics",
+    "reputation",
+    "social-media",
+    "automation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@gohighlevel/api-client": "^1.0.0",
+    "@notionhq/client": "^2.2.15",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5"
+  }
+}
+
